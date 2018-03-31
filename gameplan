@@ -1,0 +1,9 @@
+Labb 2, ordkedjor.
+
+vi har två ord på 5 bokstäver, x och y.
+
+x --> y om de fyra sista bokstäverna i x finns i y och vise versa.
+
+Task:
+1: Få in ord och skapa en directed graph av orden, får ta max n^2
+2: Få in två ord och reurnera avståndet mellan dessa, ha även koll på den specifika vägen
