@@ -6,4 +6,17 @@ x --> y om de fyra sista bokstäverna i x finns i y och vise versa.
 
 Task:
 1: Få in ord och skapa en directed graph av orden, får ta max n^2
-2: Få in två ord och reurnera avståndet mellan dessa, ha även koll på den specifika vägen
+2: Få in två ord och reurnera avståndet mellan dessa,
+ha även koll på den specifika vägen. Får ta o(n+m), m: antalet "-->".
+Detta ska göras med BFS, breadth first search.
+
+Implementering:
+Konstruktor: skapa ett ord som en node där en har en lista med 27? element.
+1 om bokstaven finns, 0 annars.
+
+Graph:
+lägg in var och en och jämför då med varje, n^2 borde vara lätt.
+
+BFS:
+kolla i powerpointen.
+
