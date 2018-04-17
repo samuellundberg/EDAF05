@@ -1,22 +1,24 @@
 import time
 start_time = time.time()
 all_nodes = []
-
+sorted_nodes = [0] * 5476   # -9409
 
 class Node(object):
     word = ''
     path_to = []
     letters = [0] * 26
+    index = -1
 
     # The class "constructor" - It's actually an initializer
-    def __init__(self, word, path_to, letters):
+    def __init__(self, word, path_to, letters, index):
         self.word = word
         self.path_to = path_to
         self.letters = letters
+        self.index = index
 
 
-def make_node(word, path_to, letters):
-    node = Node(word, path_to, letters)
+def make_node(word, path_to, letters, index):
+    node = Node(word, path_to, letters, index)
     return node
 
 
@@ -30,7 +32,8 @@ def read_words(wordfile):
         this_letters = [0]*26
         for i in range(5):
             this_letters[ord(word[i]) - 97] += 1
-        new_node = make_node(word, [], this_letters)
+        this_index = counter
+        new_node = make_node(word, [], this_letters, this_index)
         make_pointers(new_node, all_nodes)
         all_nodes.append(new_node)
         counter += 1
@@ -39,9 +42,9 @@ def read_words(wordfile):
 def make_pointers(n, nodelist):        # ska ta o(n) då den anropas i en loop
     for temp_node in nodelist:
         nm_path = True        # n --> m
-        l_m = temp_node.letters.copy()
+        l_m = temp_node.letters.copy()      #o(n)
         mn_path = True        # m --> n
-        l_n = n.letters.copy()
+        l_n = n.letters.copy()              #o(n)
         for j in range(4):
 
             if nm_path:       # n --> m
@@ -68,7 +71,7 @@ def make_pointers(n, nodelist):        # ska ta o(n) då den anropas i en loop
             temp_node.path_to.append(n)
 
 
-def find_paths(in_file):            # ska ta o(n+m)
+def find_paths(in_file):            # ska ta o(n+m), denna är för långsam nu!
     infile = open(in_file, 'r')
     lines = infile.readlines()
     is_paths = [0] * (len(lines))
@@ -81,7 +84,7 @@ def find_paths(in_file):            # ska ta o(n+m)
         if word1 == word2:
             is_paths[counter] = 0
         else:
-            for c in all_nodes[ord(word1[0]) * ord(word1[1]) - 9409]:
+            for c in sorted_nodes[ord(word1[0]) * ord(word1[1]) - 9409]:
                 if c.word == word1:
                     root = c
                     break
@@ -94,42 +97,30 @@ def find_paths(in_file):            # ska ta o(n+m)
 
 
 def path_exists(root, word):      # Broadth first search
-    visited = [''] * 5476   # -9409
+    first_encounter = [True] * len(all_nodes)
     distance = 1
     layer = [root]
-    newlayer = []
+    new_layer = []
     while True:
-        for l in layer:
+        for l in layer:         # här blir det väldigt många itterationer, vilket nog är rimligt
             for ll in l.path_to:
                 if ll.word == word:
                     return distance
-                index = ord(ll.word[0]) * ord(ll.word[1]) - 9409
-                if visited[index] == '':  # hanterar kedjor
-                    newlayer.append(ll)
-                    visited[index] = [ll.word]
-                else:
-                    not_visited = True
-                    for w in visited[index]:
-                        if w == ll.word:
-                            not_visited = False
-                            break
-                    if not_visited:
-                        newlayer.append(ll)
-                        visited[index].append(ll.word)
+                if first_encounter[ll.index]:
+                    new_layer.append(ll)
+                    first_encounter[ll.index] = False
 
-        layer = newlayer
-        newlayer = []
+        layer = new_layer
+        new_layer = []
         distance += 1
         if len(layer) == 0:
             return -1
 
 
-read_words('5757.txt')
+read_words('500.txt')
 mid_time = time.time()
 print("--- %s seconds --- to read and build paths" % (mid_time - start_time))
 
-
-sorted_nodes = [0] * 5476   # -9409
 k = 0
 while k < len(all_nodes):
     n = all_nodes[k]
@@ -140,17 +131,13 @@ while k < len(all_nodes):
         sorted_nodes[ind].append(n)
     k += 1
 
-all_nodes = sorted_nodes
+# all_nodes = sorted_nodes
 
 sort_time = time.time()
 print("--- %s seconds --- to sort" % (sort_time - mid_time))
 
-print(find_paths('5757-in.txt'))
+print(find_paths('500-in.txt'))
 end_time = time.time()
 print("--- %s seconds --- to find paths" % (end_time - sort_time))
 
 print("The total time was --- %s seconds ---" % (end_time - start_time))
-
-# ord('a') = 97
-# chr(97) = 'a'
-# chr(ord('a') + 3) = 'd'
