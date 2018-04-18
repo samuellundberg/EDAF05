@@ -40,9 +40,13 @@ def read_words(wordfile):
 def make_pointers(n, nodelist):        # ska ta o(n) då den anropas i en loop
     for temp_node in nodelist:
         nm_path = True        # n --> m
-        l_m = temp_node.letters.copy()      #o(n)
+        l_m = [0]*26    # temp_node.letters.copy()      #o(n)
+        for i in range(26):
+            l_m[i] = temp_node.letters[i]
         mn_path = True        # m --> n
-        l_n = n.letters.copy()              #o(n)
+        l_n = [0]*26 # n.letters.copy()              #o(n)
+        for i in range(26):
+            l_n[i] = n.letters[i]
         for j in range(4):
 
             if nm_path:       # n --> m

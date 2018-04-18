@@ -146,9 +146,9 @@ def word_path(root, list):
     return words
 
 
-read_words('5757.txt')
+read_words('500.txt')
 mid_time = time.time()
-print("--- %s seconds --- to read and build paths" % (mid_time - start_time))
+# print("--- %s seconds --- to read and build paths" % (mid_time - start_time))
 
 
 sorted_nodes = [0] * 5476   # -9409
@@ -165,13 +165,14 @@ while k < len(all_nodes):
 all_nodes = sorted_nodes
 
 sort_time = time.time()
-print("--- %s seconds --- to sort" % (sort_time - mid_time))
-p = find_paths('5757-in.txt')
-print(p)
+# print("--- %s seconds --- to sort" % (sort_time - mid_time))
+p = find_paths('500-in.txt')
+for place in p:
+    print(place)
 end_time = time.time()
-print("--- %s seconds --- to find paths" % (end_time - sort_time))
+# print("--- %s seconds --- to find paths" % (end_time - sort_time))
 
-print("The total time was --- %s seconds ---" % (end_time - start_time))
+# print("The total time was --- %s seconds ---" % (end_time - start_time))
 
 # ord('a') = 97
 # chr(97) = 'a'
