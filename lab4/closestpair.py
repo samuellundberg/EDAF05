@@ -19,12 +19,13 @@ def make_point(index, x, y):
     points.append(point)
 
 
-def xy_sort(list_of_points):
+def xy_sort(list_of_points, q):
     x_p = sorted(list_of_points, key=lambda p: p.x)
-    i = 1
-    for tp in x_p:
-        tp.index = i
-        i += 1
+    if q == 1:                          # vi vill bara ge ny indexering första gången
+        i = 1
+        for tp in x_p:
+            tp.index = i
+            i += 1
 
     y_p = sorted(list_of_points, key=lambda p: p.y)
     return x_p, y_p
@@ -54,50 +55,57 @@ def read_file(file):
             make_point(int(raw_p), float(raw_x), float(raw_y))
 
 
-def dc_alg(p, xp, yp, s):
+def dc_alg(p, xp, yp):
     cut = int(len(p)/2)
     if cut == 1:
-        test_pair(p[0], p[1])
-        if 'l' in s: # titta till höger, upp och ner, då slipper vi titta vänster
+        if abs(p[0].x - p[1].x) < best[0] and abs(p[0].y - p[1].y) < best[0]:
+            test_pair(p[0], p[1])
+        if p[1].index < len(points):        #titta till höger, upp och ner, då slipper vi titta vänster
             delta = best[0]
-            ind = p[1].index + 1
-            dx = abs(points[ind].x - p[1].x)
-            dx2 = abs(points[ind].x - p[0].x)
-            print('försöker vi ens? lite')      # vi är här men går inte in i loopen
+            ind = p[1].index
+            dx = abs(x_points[ind].x - p[1].x)
+            dy = abs(x_points[ind].y - p[1].y)
             while dx < delta:
-                print('försöker vi ens?')
-                test_pair(points[ind], p[1])
-                if dx2 < delta:
-                    test_pair(points[ind], p[0])
+                if dy < delta:
+                    test_pair(x_points[ind], p[1])
+
                 ind += 1
-                dx = abs(points[ind].x - p[1].x)
-                dx2 = abs(points[ind].x - p[0].x)
-        if 't' in s:
-            print('nej')
+                if ind < len(points):
+                    dx = abs(x_points[ind].x - p[1].x)
+                    dy = abs(x_points[ind].y - p[1].x)
+                else:
+                    break
+
+            ind = p[1].index
+            dx2 = abs(x_points[ind].x - p[0].x)
+            dy2 = abs(x_points[ind].y - p[0].y)
+            while dx2 < delta:
+                if dy2 < delta:
+                    test_pair(x_points[ind], p[0])
+
+                ind += 1
+                if ind < len(points):
+                    dx2 = abs(x_points[ind].x - p[0].x)
+                    dy2 = abs(x_points[ind].y - p[0].y)
+                else:
+                    break
+
     else:
-        x_lim = xp[cut].x
-        pl = []
-        pr = []
-        for tp in p:
-            if tp.x < x_lim:
-                pl.append(tp)
-            else:
-                pr.append(tp)
-        pxl, pyl = xy_sort(pl)
-        pxr, pyr = xy_sort(pr)
-        ss = s.copy()
-        s.append('l')
-        ss.append('r')
-        dc_alg(pl, pxl, pyl, s)
-        dc_alg(pr, pxr, pyr, ss)
+        pl = xp[0:cut]
+        pr = xp[cut:2*cut]
+
+        pxl, pyl = xy_sort(pl, 0)          # 0 då jag inte vill ändra index, antagligen här det är långsamt
+        pxr, pyr = xy_sort(pr, 0)
+        dc_alg(pl, pxl, pyl)
+        dc_alg(pr, pxr, pyr)
     # xpl = xp[0:cut]
     # xpr = xp[cut:2*cut]
 
 
-def print_sorted_points():      # bara för testing
-    for px in x_points:
+def print_sorted_points(a,b):      # bara för testing
+    for px in a:
         print(px.index, px.x, px.y)
-    for py in y_points:
+    for py in b:
         print(py.index, py.x, py.y)
 
 
@@ -107,7 +115,7 @@ def forgotdelta(points):
         if c % 2 == 0:
                 test_pair(i, temp)
         temp = i
-        c+=1
+        c += 1
 
 
 def bruteforce(points):
@@ -119,14 +127,13 @@ def bruteforce(points):
 
 text_file = sys.argv[1]
 read_file(text_file)
-x_points, y_points = xy_sort(points)
-dc_alg(points, x_points, y_points, [''])
-print('algoritmen', best[0])
-best[0] = 10
-bruteforce(points)
-print('bruteforce', best[0])
-best[0] = 10
-forgotdelta(x_points)
-print('utan delta', best[0])
+x_points, y_points = xy_sort(points, 1)
+dc_alg(points, x_points, y_points)
+print(best[0])
+# best[0] = 20000
+# bruteforce(points)
+#print('bruteforce', best[0])
+# best[0] = 20000
+# forgotdelta(x_points)
+#print('utan delta', best[0])
 
-# print_sorted_points()
