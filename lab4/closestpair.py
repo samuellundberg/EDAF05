@@ -48,15 +48,13 @@ def read_file(file):
 
     for line in lines:
         if ord(line[0]) < 65 and len(line) > 7:
-            if 'e' in line:                             # e^-4 ish hanteras
-                raw_p, long_x, long_y = line.split()
-                x1, x2 = long_x.split('e')
+            raw_p, raw_x, raw_y = line.split()
+            if 'e' in raw_x:                             # e^-4 ish hanteras
+                x1, x2 = raw_x.split('e')
                 raw_x = float(x1) ** float(x2)
-                y1, y2 = long_x.split('e')
+            if 'e' in raw_y:                             # e^-4 ish hanteras
+                y1, y2 = raw_y.split('e')
                 raw_y = float(y1) ** float(y2)
-
-            else:
-                raw_p, raw_x, raw_y = line.split()
             make_point(int(raw_p), float(raw_x), float(raw_y))
 
 
