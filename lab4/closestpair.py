@@ -5,7 +5,6 @@ points = []
 best = [int(2**32), (None, None)]
 
 
-
 class Point(object):
     # The class "constructor" - It's actually an initializer
     def __init__(self, index, x, y):
@@ -26,9 +25,7 @@ def xy_sort(list_of_points, q):
         for tp in x_p:
             tp.index = i
             i += 1
-
-    y_p = sorted(list_of_points, key=lambda p: p.y)
-    return x_p, y_p
+    return x_p
 
 
 def distance(p1, p2):
@@ -50,17 +47,25 @@ def read_file(file):
     lines = f.readlines()
 
     for line in lines:
-        if ord(line[0]) < 65 and len(line) > 5:       # ord(' ')=32, ord('1')=49ord, ('A')=65
-            raw_p, raw_x, raw_y = line.split()
+        if ord(line[0]) < 65 and len(line) > 7:
+            if 'e' in line:                             # e^-4 ish hanteras
+                raw_p, long_x, long_y = line.split()
+                x1, x2 = long_x.split('e')
+                raw_x = float(x1) ** float(x2)
+                y1, y2 = long_x.split('e')
+                raw_y = float(y1) ** float(y2)
+
+            else:
+                raw_p, raw_x, raw_y = line.split()
             make_point(int(raw_p), float(raw_x), float(raw_y))
 
 
-def dc_alg(p, xp, yp):
+def dc_alg(p, xp):
     cut = int(len(p)/2)
     if cut == 1:
         if abs(p[0].x - p[1].x) < best[0] and abs(p[0].y - p[1].y) < best[0]:
             test_pair(p[0], p[1])
-        if p[1].index < len(points):        #titta till höger, upp och ner, då slipper vi titta vänster
+        if p[1].index < len(points):        # titta till höger, upp och ner, då slipper vi titta vänster
             delta = best[0]
             ind = p[1].index
             dx = abs(x_points[ind].x - p[1].x)
@@ -91,49 +96,17 @@ def dc_alg(p, xp, yp):
                     break
 
     else:
-        pl = xp[0:cut]
+        pl = xp[0:cut]          # för långsam?
         pr = xp[cut:2*cut]
-
-        pxl, pyl = xy_sort(pl, 0)          # 0 då jag inte vill ändra index, antagligen här det är långsamt
-        pxr, pyr = xy_sort(pr, 0)
-        dc_alg(pl, pxl, pyl)
-        dc_alg(pr, pxr, pyr)
-    # xpl = xp[0:cut]
-    # xpr = xp[cut:2*cut]
-
-
-def print_sorted_points(a,b):      # bara för testing
-    for px in a:
-        print(px.index, px.x, px.y)
-    for py in b:
-        print(py.index, py.x, py.y)
-
-
-def forgotdelta(points):
-    c = 1
-    for i in points:
-        if c % 2 == 0:
-                test_pair(i, temp)
-        temp = i
-        c += 1
-
-
-def bruteforce(points):
-    for i in points:
-        for j in points:
-            if i.index != j.index:
-                test_pair(i, j)
+        dc_alg(pl, pl)
+        dc_alg(pr, pr)
 
 
 text_file = sys.argv[1]
 read_file(text_file)
-x_points, y_points = xy_sort(points, 1)
-dc_alg(points, x_points, y_points)
-print(best[0])
-# best[0] = 20000
-# bruteforce(points)
-#print('bruteforce', best[0])
-# best[0] = 20000
-# forgotdelta(x_points)
-#print('utan delta', best[0])
-
+num = len(points)
+x_points = xy_sort(points, 1)
+dc_alg(points, x_points)
+print(sys.argv[1][:-4])     # name
+print(num)          # number
+print(best[0])      # dist
